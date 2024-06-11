@@ -1,0 +1,131 @@
+Design Your Data - The Event Struct
+
+import SwiftUI
+
+struct Event: Identifiable, Comparable {
+    var id = UUID()
+    var title: String
+    var date: Date
+    var textColor: Color
+
+    static func < (lhs: Event, rhs: Event) -> Bool {
+        return lhs.date < rhs.date
+    }
+}
+
+
+Build The Views - EventsView, EventRow, and EventForm
+
+import SwiftUI
+
+struct EventsView: View {
+    @State private var events: [Event] = []
+    @State private var showingAddEvent = false
+    
+    var body: some View {
+        NavigationStack {
+            List {
+                ForEach(events) { event in
+                    EventRow(event: event)
+                }
+                .onDelete(perform: deleteItems)
+            }
+            .navigationTitle("Events")
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button(action: {
+                        showingAddEvent = true
+                    }) {
+                        Image(systemName: "plus")
+                    }
+                }
+            }
+            .sheet(isPresented: $showingAddEvent) {
+                EventForm { newEvent in
+                    events.append(newEvent)
+                    events.sort()
+                }
+            }
+        }
+    }
+    
+    func deleteItems(at offsets: IndexSet) {
+        events.remove(atOffsets: offsets)
+    }
+}
+
+EventRow: A Snapshot of Your Event
+
+import SwiftUI
+
+struct EventRow: View {
+    var event: Event
+    @State private var now = Date()
+    
+    var body: some View {
+        VStack(alignment: .leading) {
+            Text(event.title)
+                .font(.headline)
+                .foregroundColor(event.textColor)
+            Text(relativeDateString(for: event.date))
+                .font(.subheadline)
+                .foregroundColor(.secondary)
+        }
+        .onAppear(perform: startTimer)
+    }
+    
+    func startTimer() {
+        Timer.scheduledTimer(withTimeInterval: 60, repeats: true) { _ in
+            now = Date()
+        }
+    }
+    
+    func relativeDateString(for date: Date) -> String {
+        let formatter = RelativeDateTimeFormatter()
+        formatter.unitsStyle = .full
+        return formatter.localizedString(for: date, relativeTo: now)
+    }
+}
+
+EventForm: Adding and Editing Events
+import SwiftUI
+
+struct EventForm: View {
+    @Environment(\.dismiss) var dismiss
+    @State private var title = ""
+    @State private var date = Date()
+    @State private var textColor = Color.black
+    var onSave: (Event) -> Void
+
+    var body: some View {
+        NavigationStack {
+            Form {
+                Section(header: Text("Event Details")) {
+                    TextField("Title", text: $title)
+                    DatePicker("Date", selection: $date, displayedComponents: .date)
+                    ColorPicker("Text Color", selection: $textColor)
+                }
+            }
+            .navigationTitle("Add Event")
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button("Save") {
+                        if !title.isEmpty {
+                            let newEvent = Event(title: title, date: date, textColor: textColor)
+                            onSave(newEvent)
+                            dismiss()
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+Going Above and Beyond (Optional)
+Enhance the EventForm with an ImagePicker row, allowing users to choose and attach images to their events.
+
+Section {
+    // Other fields...
+    ImagePicker(imageData: $imageData)
+}
