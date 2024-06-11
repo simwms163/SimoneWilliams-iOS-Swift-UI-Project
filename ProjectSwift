@@ -1,4 +1,4 @@
-Design Your Data - The Event Struct
+// Design Your Data - The Event Struct
 
 import SwiftUI
 
@@ -14,7 +14,7 @@ struct Event: Identifiable, Comparable {
 }
 
 
-Build The Views - EventsView, EventRow, and EventForm
+// Build The Views - EventsView, EventRow, and EventForm
 
 import SwiftUI
 
@@ -54,7 +54,7 @@ struct EventsView: View {
     }
 }
 
-EventRow: A Snapshot of Your Event
+// EventRow: A Snapshot of Your Event
 
 import SwiftUI
 
@@ -87,7 +87,8 @@ struct EventRow: View {
     }
 }
 
-EventForm: Adding and Editing Events
+// EventForm: Adding and Editing Events
+
 import SwiftUI
 
 struct EventForm: View {
@@ -122,8 +123,8 @@ struct EventForm: View {
     }
 }
 
-Going Above and Beyond (Optional)
-Enhance the EventForm with an ImagePicker row, allowing users to choose and attach images to their events.
+// Going Above and Beyond (Optional)
+// Enhance the EventForm with an ImagePicker row, allowing users to choose and attach images to their events.
 
 Section {
     // Other fields...
